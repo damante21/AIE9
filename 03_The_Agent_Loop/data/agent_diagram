@@ -1,0 +1,45 @@
+┌─────────────────────────────────────────────┐
+│         User Query                          │
+└──────────────┬──────────────────────────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │  @before_model       │  ← Middleware Hook
+    │  (logging)           │
+    └──────────┬───────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │   LLM (Agent)        │
+    │   - System Prompt    │
+    │   - Message History  │
+    └──────────┬───────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │  @after_model        │  ← Middleware Hook
+    │  (track_tool_usage)  │
+    └──────────┬───────────┘
+               │
+         ┌─────┴─────┐
+         │ Tool Calls?│
+         └─────┬─────┘
+               │
+        ┌──────┴──────┐
+        │             │
+        ▼             ▼
+    [YES]          [NO]
+     │              │
+     ▼              ▼
+┌─────────┐    ┌─────────┐
+│  TOOLS  │    │   END   │
+│         │    │         │
+└────┬────┘    └─────────┘
+     │
+     └─► loops back to agent
+     
+Available Tools:
+• search_wellness_knowledge (RAG)
+• calculate
+• get_current_time
+• convert_miles_to_km
