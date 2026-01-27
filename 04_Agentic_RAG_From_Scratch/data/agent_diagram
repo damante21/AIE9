@@ -1,0 +1,120 @@
+                    ┌───────────┌─────────────────────────────────────────────────────────────┐
+│  rag_agent_with_memory.invoke(                              │
+│    {"messages": [HumanMessage(...)]},                       │
+│    config={"configurable": {"thread_id": "conv_1"}}         │
+│  )                                                           │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │   MemorySaver        │
+              │   Checkpoint System  │
+              └──────┬───────┬───────┘
+                     │       │
+         ┌───────────┘       └─────────────┐
+         ▼                                  ▼
+   [Found State]                    [No State Found]
+   Load previous                    Start fresh with
+   conversation                     initial messages
+         │                                  │
+         └────────────┬─────────────────────┘
+                      │
+                      ▼
+           ┌──────────────────────┐
+           │      START            │
+           └──────────┬────────────┘
+                      │
+                      ▼
+           ┌─────────────────────────┐
+           │   agent node            │
+           │   (rag_agent_node)      │
+           │   • Calls LLM           │
+           │   • Has tools bound     │
+           └──────────┬──────────────┘
+                      │
+              [💾 STATE SAVED]
+                      │
+                      ▼
+           ┌────────────────────────────┐
+           │  custom_should_continue()  │
+           │                            │
+           │  1️⃣ Count ToolMessages:    │
+           │     tool_call_count = sum( │
+           │       1 for msg if         │
+           │       isinstance(msg,      │
+           │       ToolMessage)         │
+           │     )                      │
+           │                            │
+           │  2️⃣ Check limit:           │
+           │     if count >= 10:        │
+           │       return "max_reached" │
+           │                            │
+           │  3️⃣ Check tool calls:      │
+           │     if last_message.       │
+           │       tool_calls:          │
+           │       return "tools"       │
+           │                            │
+           │  4️⃣ Otherwise:             │
+           │     return "end"           │
+           └───┬────────┬───────────┬───┘
+               │        │           │
+      ┌────────┘        │           └──────────┐
+      ▼                 ▼                      ▼
+┌──────────┐      ┌─────────┐      ┌────────────────┐
+│  tools   │      │   END   │      │ max_iterations │
+│  node    │      │         │      │     node       │
+│          │      └─────────┘      │                │
+│Available │                       │Returns message:│
+│Tools:    │                       │"Reached max    │
+│• search_ │                       │ tool calls..."  │
+│  wellness│                       └────────┬───────┘
+│• calculate                              │
+│• get_time│                        [💾 STATE SAVED]
+└────┬─────┘                              │
+     │                                    ▼
+[💾 STATE SAVED]                    ┌─────────┐
+     │                              │   END   │
+     │                              └─────────┘
+     └──► loops back to
+          agent node
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATE STRUCTURE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class AgentState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
+    # add_messages reducer appends new messages
+
+Message Types in State:
+• HumanMessage - User input
+• AIMessage - LLM response (may include tool_calls)
+• ToolMessage - Tool execution results
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MEMORY/CHECKPOINTING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• MemorySaver saves state after EVERY node execution
+• thread_id in config identifies conversation
+• Same thread_id = loads previous conversation
+• Different thread_id = starts new conversation
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXAMPLE CONVERSATION FLOW WITH MEMORY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Turn 1: "tips for sleep?"
+  → MemorySaver: No state found, start fresh
+  → Graph executes → State saved with thread_id
+  → State contains: [HumanMsg, AIMsg, ToolMsg, AIMsg]
+
+Turn 2: "what about exercise?"  (same thread_id)
+  → MemorySaver: Found state! Load it
+  → New message added to existing messages
+  → State contains: [Turn 1 messages] + [new HumanMsg, ...]
+  → Agent sees full context, can reference "sleep"
+
+Turn 3: "summarize everything"  (same thread_id)
+  → MemorySaver: Load entire conversation
+  → Agent summarizes all previous turns
