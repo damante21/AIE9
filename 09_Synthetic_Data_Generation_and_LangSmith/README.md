@@ -21,6 +21,12 @@ In today's assignment, we'll be creating Synthetic Data, and using it to benchma
   3. Make changes to our pipeline
   4. Evaluate the modified pipeline
 
+### Evaluation Results
+
+![Evaluation Comparison](data/evaluation_comparison.png)
+
+*LangSmith evaluation comparison showing the impact of pipeline modifications (chunk size, embedding model, and prompt) on key metrics.*
+
 ## Ship 🚢
 
 The completed notebook!
