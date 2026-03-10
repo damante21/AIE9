@@ -1,0 +1,23 @@
+{
+  "inputs": null,
+  "outputs": null,
+  "metadata": {
+    "ls_run_depth": 0,
+    "revision_id": "0c48137-dirty",
+    "type": "evaluation"
+  },
+  "langsmith": {
+    "organization": {
+      "name": "Personal",
+      "id": "40a539c7-53e6-4707-933a-af11fd12be9a"
+    },
+    "workspace": {
+      "name": "Workspace 1",
+      "id": "c93f4590-e6e3-4356-8242-c69be9f3c1c8"
+    },
+    "tracing_project": {
+      "id": "0ad098ba-4a83-4c24-bdcc-13db4cde296d",
+      "name": "RAGAS-Eval-OpenAI"
+    }
+  }
+}

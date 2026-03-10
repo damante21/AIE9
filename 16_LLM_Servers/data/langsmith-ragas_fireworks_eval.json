@@ -1,0 +1,86 @@
+{
+  "inputs": null,
+  "outputs": {
+    "scores": [
+      {
+        "answer_relevancy": 0.8753561993831895,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0.05,
+        "faithfulness": 0.5789473684210527
+      },
+      {
+        "answer_relevancy": 0.947933436736724,
+        "context_recall": 0.6,
+        "factual_correctness(mode=f1)": 0.67,
+        "faithfulness": 0.7391304347826086
+      },
+      {
+        "answer_relevancy": 0.8482023676951898,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0.2,
+        "faithfulness": 0.2857142857142857
+      },
+      {
+        "answer_relevancy": 0.9580640266033233,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0,
+        "faithfulness": 1
+      },
+      {
+        "answer_relevancy": 1,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0,
+        "faithfulness": 1
+      },
+      {
+        "answer_relevancy": 0.9148328611062387,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0.42,
+        "faithfulness": 0.8421052631578947
+      },
+      {
+        "answer_relevancy": 0.9567179129214073,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0.64,
+        "faithfulness": 0.7037037037037037
+      },
+      {
+        "answer_relevancy": 0.9359782973478369,
+        "context_recall": 1,
+        "factual_correctness(mode=f1)": 0.39,
+        "faithfulness": 0.6956521739130435
+      },
+      {
+        "answer_relevancy": 0.9017229553328049,
+        "context_recall": 0.6666666666666666,
+        "factual_correctness(mode=f1)": 0.4,
+        "faithfulness": 0.5294117647058824
+      },
+      {
+        "answer_relevancy": 0.991422857591122,
+        "context_recall": 0.6666666666666666,
+        "factual_correctness(mode=f1)": 0.5,
+        "faithfulness": 0.9354838709677419
+      }
+    ]
+  },
+  "metadata": {
+    "ls_run_depth": 0,
+    "revision_id": "0c48137-dirty",
+    "type": "evaluation"
+  },
+  "langsmith": {
+    "organization": {
+      "name": "Personal",
+      "id": "40a539c7-53e6-4707-933a-af11fd12be9a"
+    },
+    "workspace": {
+      "name": "Workspace 1",
+      "id": "c93f4590-e6e3-4356-8242-c69be9f3c1c8"
+    },
+    "tracing_project": {
+      "id": "3a5409d8-6163-4c44-aeb1-e1d35c02a656",
+      "name": "RAGAS-Eval-Fireworks"
+    }
+  }
+}
