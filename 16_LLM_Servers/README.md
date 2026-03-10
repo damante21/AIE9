@@ -83,7 +83,9 @@ What is the difference between serverless and dedicated endpoints?
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+Serverless endpoints are shared, on-demand inference endpoints hosted by the provider (Fireworks AI in this case). You use them immediately with no setup — just point to the model identifier (e.g., accounts/fireworks/models/gpt-oss-20b) and start making requests. There's no infrastructure to configure, no GPUs to provision, and no hourly cost when idle. The trade-off is that you share capacity with other users, so there are no guarantees on throughput or latency — under heavy load, requests may queue or slow down.
+
+Dedicated (on-demand) endpoints are provisioned infrastructure reserved for your use. As shown in ENDPOINT_SETUP.md, you configure specific GPU types (e.g., NVIDIA H100, B200), replica counts, quantization precision, and autoscaling behavior. This gives you guaranteed capacity and consistent performance, but at a direct cost — the example shows ~$36/hr for an NVIDIA B200 setup. You're responsible for managing the lifecycle: scaling, shutting down when done, and monitoring usage to avoid unexpected charges (hence the repeated warnings in the README).
 
 ### ❓ Question #2:
 
@@ -91,7 +93,18 @@ Why is it important to consider token throughput and latency when choosing an LL
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+Token throughput and latency directly determine the user experience of any LLM-powered application.
+
+Latency is the time before a user sees a response (or the first token in a streaming setup). For user-facing apps, high latency means users are staring at a spinner — anything beyond a couple seconds feels sluggish. This is especially critical for interactive use cases like chat, search, or copilots where users expect near-instant feedback.
+
+Token throughput is how many tokens per second the endpoint can generate. Low throughput means responses trickle in slowly even after they start, and — more importantly — it caps how many concurrent users your application can serve. The endpoint_slammer.ipynb notebook demonstrates this directly: it fires 24 simultaneous requests to test whether the endpoint can handle concurrent load. If throughput is insufficient, later requests queue up or fail outright, degrading the experience for everyone.
+
+Why both matter together:
+
+Single-user experience: High latency + low throughput = slow, frustrating interactions. Users abandon apps that feel unresponsive.
+Multi-user scalability: Even if single-request latency is fine, low throughput under concurrency means your app breaks down as traffic scales. The endpoint slammer test with 24 parallel requests is a microcosm of what happens in production with real users.
+Cost trade-off: As shown in ENDPOINT_SETUP.md, dedicated endpoints with guaranteed throughput cost ~$36/hr for high-end GPUs. Serverless is cheaper at low volume but offers no performance guarantees. Choosing the right balance of cost vs. performance depends on your traffic patterns and latency requirements.
+Model selection: Larger models generally produce better outputs but have lower throughput and higher latency. For user-facing apps, a smaller, faster model (like gpt-oss-20b) that responds quickly may deliver a better overall experience than a larger model that's more capable but painfully slow.
 
 ## Activity 1: RAGAS Evaluation with Cost Analysis
 
